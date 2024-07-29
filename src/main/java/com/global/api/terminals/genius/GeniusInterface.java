@@ -42,13 +42,13 @@ public class GeniusInterface implements IDeviceInterface {
     }
 
     @Override
-    public TerminalManageBuilder refundById() throws ApiException {
+    public ISAFResponse safSummaryReport(String printData, String reportData) throws ApiException {
         throw new UnsupportedTransactionException();
     }
 
     @Override
-    public ISAFResponse safSummaryReport(String printData, String reportData) throws ApiException {
-        throw new UnsupportedTransactionException();
+    public TerminalReportBuilder localDetailReport() throws ApiException {
+        throw  new UnsupportedTransactionException();
     }
 
     @Override
@@ -308,12 +308,6 @@ public class GeniusInterface implements IDeviceInterface {
     public SAFSummaryReport safSummaryReport(SafReportSummary safReportIndicator) throws ApiException {
         throw new UnsupportedTransactionException();
     }
-
-    @Override
-    public TerminalReportBuilder localDetailReport() throws ApiException {
-        throw new UnsupportedTransactionException("This transaction is not currently supported for this payment type.");
-    }
-
     @Override
     public IDeviceResponse sendFile(SendFileType fileType, String filePath) throws ApiException {
         throw new UnsupportedTransactionException();
@@ -380,8 +374,5 @@ public class GeniusInterface implements IDeviceInterface {
 
     }
 
-    @Override
-    public TerminalManageBuilder increasePreAuth(BigDecimal amount) throws UnsupportedTransactionException {
-        throw new UnsupportedTransactionException();
-    }
+
 }

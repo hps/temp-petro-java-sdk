@@ -1,5 +1,7 @@
 package com.global.api.terminals.upa;
 
+import java.nio.charset.StandardCharsets;
+
 import com.global.api.entities.enums.ConnectionModes;
 import com.global.api.entities.enums.TransactionType;
 import com.global.api.entities.exceptions.ApiException;
@@ -8,13 +10,13 @@ import com.global.api.entities.exceptions.UnsupportedTransactionException;
 import com.global.api.terminals.*;
 import com.global.api.terminals.abstractions.IDeviceInterface;
 import com.global.api.terminals.abstractions.IDeviceMessage;
-import com.global.api.terminals.abstractions.ITerminalReport;
+import com.global.api.terminals.abstractions.IUPAMessage;
 import com.global.api.terminals.builders.TerminalAuthBuilder;
 import com.global.api.terminals.builders.TerminalManageBuilder;
 import com.global.api.terminals.builders.TerminalReportBuilder;
-import com.global.api.terminals.abstractions.IUPAMessage;
 import com.global.api.terminals.messaging.IMessageReceivedInterface;
 import com.global.api.terminals.messaging.IMessageSentInterface;
+import com.global.api.terminals.pax.responses.LocalDetailReportResponse;
 import com.global.api.terminals.upa.Entities.Enums.UpaMessageId;
 import com.global.api.terminals.upa.interfaces.UpaTcpInterface;
 import com.global.api.terminals.upa.responses.UpaTransactionResponse;
@@ -23,8 +25,6 @@ import com.global.api.terminals.upa.subgroups.RequestParamFields;
 import com.global.api.terminals.upa.subgroups.RequestProcessingIndicatorsFields;
 import com.global.api.terminals.upa.subgroups.RequestTransactionFields;
 import com.global.api.utils.JsonDoc;
-
-import java.nio.charset.StandardCharsets;
 
 public class UpaController extends DeviceController {
     private IDeviceInterface _device;
@@ -207,7 +207,7 @@ public class UpaController extends DeviceController {
     }
 
     @Override
-    public ITerminalReport processReport(TerminalReportBuilder builder) throws ApiException {
-        throw new UnsupportedTransactionException("This transaction is not currently supported for this payment type.");
+    public LocalDetailReportResponse processLocalDetailReport(TerminalReportBuilder builder) throws ApiException {
+        throw new UnsupportedTransactionException();
     }
 }

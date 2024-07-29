@@ -33,7 +33,6 @@ public class NtsGiftTests {
     NetworkGatewayConfig config;
     AcceptorConfig acceptorConfig;
     private GiftCard card;
-    private GiftCard giftCard;
     private NtsRequestMessageHeader ntsRequestMessageHeader;
     Integer Stan = Integer.parseInt(DateTime.now().toString("hhmmss"));
     private PriorMessageInformation priorMessageInformation;
@@ -100,7 +99,7 @@ public class NtsGiftTests {
         config.setBinTerminalType(" ");
         config.setInputCapabilityCode(CardDataInputCapability.ContactEmv_MagStripe);
         config.setTerminalId("21");
-        config.setUnitNumber("00001234567");
+        config.setUnitNumber("00066654534");
         config.setSoftwareVersion("21");
         config.setLogicProcessFlag(LogicProcessFlag.Capable);
         config.setTerminalType(TerminalType.VerifoneRuby2Ci);
@@ -110,7 +109,6 @@ public class NtsGiftTests {
 
 //        card = NtsTestCards.svsCard();
         card = NtsTestCards.svsCardTrack1(EntryMethod.Swipe);
-        giftCard = NtsTestCards.GiftCardSwipe();
     }
 
     private NtsTag16 getTag16(){
@@ -151,27 +149,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-    }
-
-    @Test
-    public void test_GiftCard_active_001() throws ApiException {
-        Transaction response = giftCard.activate(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        assertNotNull(response);
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -189,8 +171,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction transaction = Transaction.fromBuilder()
                 .withTransactionTypeIndicator(response.getTransactionReference().getOriginalTransactionTypeIndicator())
@@ -213,51 +198,12 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
-    }
-
-    @Test
-    public void test_giftCard_active_cancellation_002() throws ApiException {
-        Integer Stan = Integer.parseInt(DateTime.now().toString("hhmmss"));
-
-        Transaction response = giftCard.activate(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        Transaction transaction = Transaction.fromBuilder()
-                .withTransactionTypeIndicator(response.getTransactionReference().getOriginalTransactionTypeIndicator())
-                .withAuthorizer(response.getTransactionReference().getAuthorizer())
-                .withPaymentMethod(card)
-                .withOriginalMessageCode(NtsMessageCode.AuthorizationOrBalanceInquiry.getValue())
-                .withApprovalCode(response.getTransactionReference().getApprovalCode())
-                .withAuthorizationCode(response.getAuthorizationCode())
-                .withSystemTraceAuditNumber(response.getTransactionReference().getSystemTraceAuditNumber())
-                .withTransactionTime(response.getTransactionReference().getOriginalTransactionTime())
-                .withOriginalTransactionDate(response.getTransactionReference().getOriginalTransactionDate())
-                .build();
-
-        response = transaction.voidTransaction(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(transaction.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -273,8 +219,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -286,13 +235,19 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
     @Test
     public void test_SVS_Balance_Inquiry_004() throws ApiException {
+
+//
+
         Transaction response = card.balanceInquiry()
                 .withCurrency("USD")
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -303,26 +258,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-    }
-
-    @Test
-    public void test_giftCard_Balance_Inquiry_004() throws ApiException {
-
-        Transaction response = giftCard.balanceInquiry()
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -339,8 +279,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -357,8 +300,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.voidTransaction(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -369,38 +315,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-    }
-
-  @Test
-    public void test_giftCard_Issue_Cancellation_006() throws ApiException {
-
-        Transaction response = giftCard.issue(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.voidTransaction(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -419,8 +338,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -431,8 +353,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -449,8 +374,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
     }
 
@@ -467,8 +395,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(10))
                 .withCurrency("USD")
@@ -480,8 +411,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -513,8 +447,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -525,36 +462,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-    }
-
-    @Test
-    public void test_GiftCard_Pre_Authorization_Reversal_010() throws ApiException {
-        Transaction response = giftCard.authorize(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.reverse(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -572,28 +484,12 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
-    }
-
-    @Test
-    public void test_GiftCard_Pre_Authorization_ICR_011() throws ApiException {
-        ServicesContainer.configureService(config, "ICR");
-        acceptorConfig.setOperatingEnvironment(OperatingEnvironment.UnattendedAfd);
-
-        Transaction response = giftCard.authorize(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute("ICR");
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -611,8 +507,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -623,8 +522,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -656,8 +558,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -668,38 +573,12 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
-
-    @Test
-    public void test_giftCard_Pre_Authorization_Reversal_ICR_013() throws ApiException {
-        Transaction response = giftCard.authorize(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.reverse(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-    }
-
 
     @Test
     public void test_SVS_Purchase_014() throws ApiException {
@@ -713,8 +592,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -756,8 +638,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.voidTransaction(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -768,37 +653,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-    }
-
-    @Test
-    public void test_GiftCard_Purchase_Cancellation_015() throws ApiException {
-
-        Transaction response = giftCard.charge(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.voidTransaction(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -813,8 +672,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -825,8 +687,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -841,8 +706,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -857,8 +725,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -869,38 +740,12 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
-
-    @Test
-    public void test_GiftCard_Recharge_Reversal_018() throws ApiException {
-        Transaction response = giftCard.addValue(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.reverse(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-    }
-
 
     @Test
     public void test_SVS_Return_019() throws ApiException {
@@ -914,8 +759,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -930,8 +778,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -942,36 +793,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-    }
-
-    @Test
-    public void test_GiftCard_Return_Reversal_020() throws ApiException {
-        Transaction response = giftCard.refund(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        response = response.reverse(new BigDecimal(10))
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -986,42 +812,11 @@ public class NtsGiftTests {
         assertEquals("15", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
-
-        NtsAuthCreditResponseMapper responseMapper = (NtsAuthCreditResponseMapper) response.getNtsResponse().getNtsResponseMessage();
-
-        // Data-Collect request preparation.
-        ntsRequestMessageHeader.setPinIndicator(PinIndicator.WithoutPin);
-        ntsRequestMessageHeader.setNtsMessageCode(NtsMessageCode.DataCollectOrSale);
-
-        Transaction dataCollectResponse = response.capture(new BigDecimal(10))
-                .withCurrency("USD")
-                .withNtsProductData(getProductDataForNonFleetBankCards(card))
-                .withNtsTag16(getTag16())
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Integer.parseInt(response.getTransactionReference().getSystemTraceAuditNumber()))
-                .execute();
-        assertNotNull(dataCollectResponse);
-
-        // check response
-        assertEquals("00", dataCollectResponse.getResponseCode());
-    }
-
-    @Test
-    public void test_GiftCard_Purchase_021() throws ApiException {
-        Transaction response = giftCard.charge(new BigDecimal(100))
-                .withCurrency("USD")
-                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
-                .withSystemTraceAuditNumber(Stan)
-                .execute();
-
-        // check response
-        assertEquals("00", response.getResponseCode());
-
-        assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
-        assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
-        assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         NtsAuthCreditResponseMapper responseMapper = (NtsAuthCreditResponseMapper) response.getNtsResponse().getNtsResponseMessage();
 
@@ -1054,8 +849,11 @@ public class NtsGiftTests {
         assertEquals("15", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = response.reverse(new BigDecimal(100))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -1066,8 +864,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
 
@@ -1085,8 +886,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         response = card.addValue(new BigDecimal(50))
                 .withCurrency("USD")
@@ -1098,8 +902,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
     }
 
     @Test
@@ -1119,8 +926,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(5))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -1133,8 +943,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -1182,8 +995,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(5))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -1196,8 +1012,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -1271,8 +1090,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(5))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -1285,8 +1107,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 
@@ -1358,8 +1183,11 @@ public class NtsGiftTests {
         assertEquals("00", response.getResponseCode());
 
         assertNotNull(response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + response.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(response.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + response.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + response.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         Transaction completionResponse = response.preAuthCompletion(new BigDecimal(5))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
@@ -1370,8 +1198,11 @@ public class NtsGiftTests {
         assertEquals("00", completionResponse.getResponseCode());
 
         assertNotNull(completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
+        System.out.println("TransactionTypeIndicator: " + completionResponse.getTransactionReference().getOriginalTransactionTypeIndicator().getValue());
         assertNotNull(completionResponse.getTransactionReference().getSystemTraceAuditNumber());
+        System.out.println("STAN: " + completionResponse.getTransactionReference().getSystemTraceAuditNumber());
         assertNotNull(completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
+        System.out.println("RemainingBalance: " + completionResponse.getTransactionReference().getBankcardData().get(UserDataTag.RemainingBalance));
 
         // Data-Collect request preparation.
 

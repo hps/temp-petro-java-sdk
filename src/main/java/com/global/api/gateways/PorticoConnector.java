@@ -535,8 +535,8 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway, IRe
             // Transaction ID
             et.subElement(root, "GatewayTxnId", builder.getTransactionId());
 
-            // reversal & Capture
-            if (type.equals(TransactionType.Reversal) || type.equals(TransactionType.Capture) || ((paymentType != null) && paymentType.equals(PaymentMethodType.ACH))) {
+            // reversal
+            if (type.equals(TransactionType.Reversal) || ((paymentType != null) && paymentType.equals(PaymentMethodType.ACH))) {
                 // client transaction id
                 et.subElement(root, "ClientTxnId", builder.getClientTransactionId());
 
@@ -798,7 +798,7 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway, IRe
         et.subElement(header, "ClientTxnId", clientTransactionId);
         et.subElement(header, "PosReqDT", this.getPosReqDT());
         et.subElement(header, "SDKNameVersion", sdkNameVersion != null ? sdkNameVersion : "java;version=" + getReleaseVersion());
-        if (builder != null && builder.getUniqueDeviceId() != null)
+        if (builder.getUniqueDeviceId() != null)
             et.subElement(header, "UniqueDeviceId", builder.getUniqueDeviceId());
 
         if(builder instanceof AuthorizationBuilder) {
@@ -878,7 +878,7 @@ public class PorticoConnector extends XmlGateway implements IPaymentGateway, IRe
         String gatewayRspText = root.getString("GatewayRspMsg");
         cardType = root.getString("CardType");
 
-        if(gatewayRspCode.equals("30")){
+        if(gatewayRspCode=="30"){
             String gatewayTxnId = root.getString("GatewayTxnId");
             throw new GatewayTimeoutException(String.format("Unexpected Gateway Response: %s - %s", gatewayRspCode, gatewayRspText), gatewayRspText, gatewayRspCode, gatewayTxnId);
         }

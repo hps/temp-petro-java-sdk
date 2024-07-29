@@ -31,11 +31,13 @@ public class UpaCreditTests {
     public UpaCreditTests() throws ApiException {
         ConnectionConfig config = new ConnectionConfig();
         config.setPort(8081);
-        config.setIpAddress("192.168.0.199");
+        config.setIpAddress("10.253.146.155");
         config.setTimeout(45000);
         config.setRequestIdProvider(new RandomIdProvider());
         config.setDeviceType(DeviceType.UPA_DEVICE);
         config.setConnectionMode(ConnectionModes.TCP_IP);
+
+//        config.setRequestLogger(new RequestFileLogger("creditTests.txt"));
 
         device = DeviceService.create(config);
         assertNotNull(device);
@@ -176,7 +178,7 @@ public class UpaCreditTests {
 
         runBasicTests(
             device.creditVoid()
-                .withTransactionId(response1.getTerminalRefNumber())
+                .withTerminalRefNumber(response1.getTerminalRefNumber())
                 .execute()
         );
     }
