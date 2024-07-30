@@ -28,8 +28,13 @@ jobs:
       env:
         MAVEN_CONFIG: "-Pfast -Dbasepom.check.skip-enforcer=false -B -fae"
 
-    - name: Publish to GitHub Packages Apache Maven
-      run: mvn deploy -DskipTests package
+    - name: Echo ENV
       env:
-        MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-        MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
+          GITHUB_CONTEXT: ${{ secrets.OSSRH_USERNAME }}
+      run: echo "$GITHUB_CONTEXT"
+        
+    #- name: Publish to GitHub Packages Apache Maven
+    #  run: mvn deploy -DskipTests package
+    #  env:
+    #    MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+    #    MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
