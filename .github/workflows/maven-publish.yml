@@ -30,7 +30,7 @@ jobs:
 
     - name: Publish to GitHub Packages Apache Maven
       #run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml 
-      run: mvn clean deploy -P release -DskipTests -Darguments=-DskipTests
+      run: mvn deploy -P release -DskipTests -Darguments=-DskipTests
       env:
         MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}
