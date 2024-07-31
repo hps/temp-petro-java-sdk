@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.heartlandpaymentsystems</groupId>
   <artifactId>globalpayments-sdk</artifactId>
-  <version>11.2.23.1</version>
+  <version>11.2.23.1-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Heartland &amp; Global Payments SDK</name>
   <description>API for processing payments through Global Payments</description>
@@ -76,7 +76,7 @@
             <configuration>
               <serverId>sonatype-nexus-staging</serverId>
               <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>true</autoReleaseAfterClose>
+              <autoReleaseAfterClose>false</autoReleaseAfterClose>
             </configuration>
           </plugin>
           <plugin>
