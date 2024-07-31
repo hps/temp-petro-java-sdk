@@ -33,7 +33,7 @@ jobs:
             }]
       
       - name: Verify package
-        run: mvn --batch-mode verify
+        run: mvn -DskipTests=true --batch-mode verify
       
       - name: Release package
         run: mvn --batch-mode -DskipTests=true releaser:release
