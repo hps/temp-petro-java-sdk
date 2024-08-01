@@ -14,7 +14,7 @@ jobs:
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '8'
           distribution: 'temurin'
       
       - name: Set up maven settings
@@ -35,5 +35,5 @@ jobs:
       - name: Verify package
         run: mvn -DskipTests=true --batch-mode verify
       
-      - name: Release package
-        run: mvn clean deploy -e -P release -DskipTests -Darguments=-DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true
+      #- name: Release package
+      #  run: mvn clean deploy -e -P release -DskipTests -Darguments=-DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true
