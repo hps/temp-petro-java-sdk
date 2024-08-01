@@ -35,5 +35,5 @@ jobs:
       - name: Verify package
         run: mvn -DskipTests=true --batch-mode verify
       
-      #- name: Release package
-      #  run: mvn clean deploy -e -P release -DskipTests -Darguments=-DskipTests -Dmaven.javadoc.skip=true -Dgpg.skip=true
+      - name: Release package
+        run: mvn clean build -P release -DskipTests -Darguments=-DskipTests -Dgpg.skip=true
