@@ -37,6 +37,9 @@ jobs:
             [
               {
                 "id": "sign",
+                "activation": {
+                   "activeByDefault": "true"
+                },
                 "properties": {
                   "gpg.passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
                 }
