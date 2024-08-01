@@ -38,8 +38,7 @@ jobs:
               {
                 "id": "sign",
                 "properties": {
-                  "gpg.passphrase",
-                  "passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
+                  "gpg.passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
                 }
               }
             ]
