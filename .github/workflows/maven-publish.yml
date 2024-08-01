@@ -18,19 +18,31 @@ jobs:
           distribution: 'temurin'
       
       - name: Set up maven settings
-        uses: s4u/maven-settings-action@v2.8.0
+        uses: whelk-io/maven-settings-xml-action@v22
         with:
-          servers: |
-            [{
-              "id": "ossrh",
-              "username": "${{ secrets.OSSRH_USERNAME }}",
-              "password": "${{ secrets.OSSRH_PASSWORD }}"
-            },
-            {
-              "id": "gpg.passphrase",
-              "passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}",
-              "configuration": {}
-            }]
+          servers: >
+            [
+              {
+                "id": "sonatype-nexus-snapshots",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_PASSWORD }}"
+              },
+              {
+                "id": "sonatype-nexus-staging",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_PASSWORD }}"
+              }
+            ]
+          profiles: >
+            [
+              {
+                "id": "sign",
+                "properties": {
+                  "gpg.passphrase",
+                  "passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
+                }
+              }
+            ]
       
       - name: Verify package
         run: mvn -DskipTests=true --batch-mode verify
