@@ -36,4 +36,4 @@ jobs:
         run: mvn -DskipTests=true --batch-mode verify
       
       - name: Release package
-        run: mvn clean package -P release -DskipTests -Darguments=-DskipTests -Dgpg.skip=true
+        run: mvn clean deploy -P release -DskipTests -Darguments=-DskipTests
