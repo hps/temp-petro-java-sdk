@@ -1,5 +1,10 @@
 # Changelog
 
+
+## Latest Version - V13.0.0.1 (09/13/2024)
+### Bug Fixes:
+- Fix for memory leak issue
+
 ## Latest Version - V13.0.0 (08/27/2024)
 ### Enhacements
 - [UPA MiC]: Add MiC connector for UPA via GP-API
