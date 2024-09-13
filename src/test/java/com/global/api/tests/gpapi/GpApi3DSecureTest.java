@@ -4,7 +4,6 @@ import com.global.api.ServicesContainer;
 import com.global.api.entities.*;
 import com.global.api.entities.enums.*;
 import com.global.api.entities.exceptions.ApiException;
-import com.global.api.entities.exceptions.BuilderException;
 import com.global.api.entities.exceptions.ConfigurationException;
 import com.global.api.entities.exceptions.GatewayException;
 import com.global.api.gateways.SSLSocketFactoryEx;
@@ -36,16 +35,14 @@ public class GpApi3DSecureTest extends BaseGpApiTest {
     private final static String CHALLENGE_REQUIRED = "CHALLENGE_REQUIRED";
     private final static String ENROLLED = "ENROLLED";
     private final static String SUCCESS_AUTHENTICATED = "SUCCESS_AUTHENTICATED";
-
+    private static final BigDecimal amount = new BigDecimal("10.01");
+    private static final String currency = "GBP";
     private final CreditCardData card;
     private final Address shippingAddress;
     private final Address billingAddress;
     private final BrowserData browserData;
     private final StoredCredential storedCredential;
     private final MobileData mobileData;
-
-    private static final BigDecimal amount = new BigDecimal("10.01");
-    private static final String currency = "GBP";
 
     public GpApi3DSecureTest() throws ConfigurationException {
         GpApiConfig config = gpApiSetup(APP_ID, APP_KEY, Channel.CardNotPresent);
@@ -120,76 +117,6 @@ public class GpApi3DSecureTest extends BaseGpApiTest {
                         .setMaximumTimeout(50)
                         .setReferenceNumber("3DS_LOA_SDK_PPFU_020100_00007")
                         .setSdkTransReference("b2385523-a66c-4907-ac3c-91848e8c0067");
-    }
-
-    @Test
-    public void FullCycle_v1() throws ApiException {
-        card.setNumber(CARDHOLDER_ENROLLED_V1.cardNumber);
-
-        boolean errorFound = false;
-        try {
-            // Check enrollment
-            Secure3dService
-                    .checkEnrollment(card)
-                    .withCurrency(currency)
-                    .withAmount(amount)
-                    .withAuthenticationSource(AuthenticationSource.Browser)
-                    .withChallengeRequestIndicator(ChallengeRequestIndicator.ChallengeMandated)
-                    .withStoredCredential(storedCredential)
-                    .execute(Secure3dVersion.ONE);
-        } catch (BuilderException e) {
-            errorFound = true;
-            assertEquals("3D Secure ONE is no longer supported!", e.getMessage());
-        } finally {
-            assertTrue(errorFound);
-        }
-
-    }
-
-    @Test
-    public void FullCycle_v1_WithTokenizedPaymentMethod() throws Exception {
-        card.setNumber(CARDHOLDER_ENROLLED_V1.cardNumber);
-
-        // Tokenize payment method
-        CreditCardData tokenizedCard = new CreditCardData();
-        tokenizedCard.setToken(card.tokenize());
-
-        assertNotNull(tokenizedCard.getToken());
-
-        boolean errorFound = false;
-        try {
-            // Check enrollment
-            Secure3dService
-                    .checkEnrollment(tokenizedCard)
-                    .withCurrency(currency)
-                    .withAmount(amount)
-                    .execute(Secure3dVersion.ONE);
-        } catch (BuilderException e) {
-            errorFound = true;
-            assertEquals("3D Secure ONE is no longer supported!", e.getMessage());
-        } finally {
-            assertTrue(errorFound);
-        }
-    }
-
-    @Test
-    public void CardHolderNotEnrolled_v1() throws ApiException {
-        card.setNumber(CARDHOLDER_NOT_ENROLLED_V1.cardNumber);
-
-        boolean errorFound = false;
-        try {
-            // Check enrollment
-            Secure3dService
-                    .checkEnrollment(card)
-                    .withCurrency(currency)
-                    .withAmount(amount)
-                    .execute(Secure3dVersion.ONE);
-        } catch (BuilderException e) {
-            errorFound = true;
-            assertEquals("3D Secure ONE is no longer supported!", e.getMessage());
-        } finally {
-            assertTrue(errorFound);
-        }
     }
 
     @Test
@@ -348,36 +275,36 @@ public class GpApi3DSecureTest extends BaseGpApiTest {
         assertTrue(secureEcom.isEnrolled());
 
         ThreeDSecure initAuth = Secure3dService
-                        .initiateAuthentication(tokenizedCard, secureEcom)
-                        .withAmount(amount)
-                        .withCurrency(currency)
-                        .withAuthenticationSource(AuthenticationSource.Browser)
-                        .withMethodUrlCompletion(MethodUrlCompletion.Yes)
-                        .withOrderCreateDate(DateTime.now())
-                        .withAddress(billingAddress, AddressType.Billing)
-                        .withAddress(shippingAddress, AddressType.Shipping)
-                        .withBrowserData(browserData)
-                        .withCustomerAccountId("6dcb24f5-74a0-4da3-98da-4f0aa0e88db3")
-                        .withAccountAgeIndicator(AgeIndicator.LessThanThirtyDays)
-                        .withAccountCreateDate(DateTime.now().plusYears(-2))
-                        .withAccountChangeDate(DateTime.now().plusYears(-2))
-                        .withAccountChangeIndicator(AgeIndicator.LessThanThirtyDays)
-                        .withPasswordChangeDate(DateTime.now())
-                        .withPasswordChangeIndicator(AgeIndicator.LessThanThirtyDays)
-                        .withHomeNumber("44", "123456798")
-                        .withWorkNumber("44", "1801555888")
-                        .withMobileNumber("44", "7975556677")
-                        .withPaymentAccountCreateDate(DateTime.now())
-                        .withPaymentAccountAgeIndicator(AgeIndicator.LessThanThirtyDays)
-                        .withSuspiciousAccountActivity(SuspiciousAccountActivity.SUSPICIOUS_ACTIVITY)
-                        .withNumberOfPurchasesInLastSixMonths(3)
-                        .withNumberOfTransactionsInLast24Hours(1)
-                        .withNumberOfTransactionsInLastYear(5)
-                        .withNumberOfAddCardAttemptsInLast24Hours(1)
-                        .withShippingAddressCreateDate(DateTime.now().plusYears(-2))
-                        .withShippingAddressUsageIndicator(AgeIndicator.ThisTransaction)
-                        .withCustomerEmail("james@globalpay.com")
-                        .execute();
+                .initiateAuthentication(tokenizedCard, secureEcom)
+                .withAmount(amount)
+                .withCurrency(currency)
+                .withAuthenticationSource(AuthenticationSource.Browser)
+                .withMethodUrlCompletion(MethodUrlCompletion.Yes)
+                .withOrderCreateDate(DateTime.now())
+                .withAddress(billingAddress, AddressType.Billing)
+                .withAddress(shippingAddress, AddressType.Shipping)
+                .withBrowserData(browserData)
+                .withCustomerAccountId("6dcb24f5-74a0-4da3-98da-4f0aa0e88db3")
+                .withAccountAgeIndicator(AgeIndicator.LessThanThirtyDays)
+                .withAccountCreateDate(DateTime.now().plusYears(-2))
+                .withAccountChangeDate(DateTime.now().plusYears(-2))
+                .withAccountChangeIndicator(AgeIndicator.LessThanThirtyDays)
+                .withPasswordChangeDate(DateTime.now())
+                .withPasswordChangeIndicator(AgeIndicator.LessThanThirtyDays)
+                .withHomeNumber("44", "123456798")
+                .withWorkNumber("44", "1801555888")
+                .withMobileNumber("44", "7975556677")
+                .withPaymentAccountCreateDate(DateTime.now())
+                .withPaymentAccountAgeIndicator(AgeIndicator.LessThanThirtyDays)
+                .withSuspiciousAccountActivity(SuspiciousAccountActivity.SUSPICIOUS_ACTIVITY)
+                .withNumberOfPurchasesInLastSixMonths(3)
+                .withNumberOfTransactionsInLast24Hours(1)
+                .withNumberOfTransactionsInLastYear(5)
+                .withNumberOfAddCardAttemptsInLast24Hours(1)
+                .withShippingAddressCreateDate(DateTime.now().plusYears(-2))
+                .withShippingAddressUsageIndicator(AgeIndicator.ThisTransaction)
+                .withCustomerEmail("james@globalpay.com")
+                .execute();
 
         assertNotNull(initAuth);
         assertEquals(SUCCESS_AUTHENTICATED, secureEcom.getStatus());
@@ -846,6 +773,147 @@ public class GpApi3DSecureTest extends BaseGpApiTest {
 
         Transaction response =
                 card
+                        .charge(amount)
+                        .withCurrency(currency)
+                        .execute();
+
+        assertNotNull(response);
+        assertEquals(SUCCESS, response.getResponseCode());
+        assertEquals(TransactionStatus.Captured.getValue(), response.getResponseMessage());
+    }
+
+    @Test
+    public void FrictionlessFullCycle_v2_Verify3DS() throws ApiException {
+        // Frictionless scenario
+        card.setNumber(CARD_AUTH_SUCCESSFUL_V2_1.cardNumber);
+
+        // Check enrollment
+        ThreeDSecure secureEcom =
+                Secure3dService
+                        .checkEnrollment(card)
+                        .withCurrency(currency)
+                        .withAmount(amount)
+                        .execute();
+
+        assertNotNull(secureEcom);
+        assertEquals(ENROLLED, secureEcom.getEnrolledStatus());
+        assertEquals(Secure3dVersion.TWO, secureEcom.getVersion());
+        assertEquals(AVAILABLE, secureEcom.getStatus());
+        assertTrue(secureEcom.isEnrolled());
+
+        // Initiate authentication
+        ThreeDSecure initAuth =
+                Secure3dService
+                        .initiateAuthentication(card, secureEcom)
+                        .withAmount(amount)
+                        .withCurrency(currency)
+                        .withAuthenticationSource(AuthenticationSource.Browser)
+                        .withMethodUrlCompletion(MethodUrlCompletion.Yes)
+                        .withOrderCreateDate(DateTime.now())
+                        .withAddress(shippingAddress, AddressType.Shipping)
+                        .withBrowserData(browserData)
+                        .withCustomerEmail("jason@globalpay.com")
+                        .execute();
+
+        assertNotNull(initAuth);
+        assertEquals(SUCCESS_AUTHENTICATED, initAuth.getStatus());
+
+        // Get authentication data
+        secureEcom =
+                Secure3dService
+                        .getAuthenticationData()
+                        .withServerTransactionId(initAuth.getServerTransactionId())
+                        .execute();
+
+        assertEquals(SUCCESS_AUTHENTICATED, secureEcom.getStatus());
+
+        card.setThreeDSecure(secureEcom);
+
+        Transaction verifyResponse =
+                card
+                        .verify()
+                        .withCurrency(currency)
+                        .execute();
+        assertNotNull(verifyResponse);
+        assertEquals(SUCCESS, verifyResponse.getResponseCode());
+        assertEquals("VERIFIED", verifyResponse.getResponseMessage());
+
+        // Create transaction
+        Transaction response =
+                card
+                        .charge(amount)
+                        .withCurrency(currency)
+                        .execute();
+
+        assertNotNull(response);
+        assertEquals(SUCCESS, response.getResponseCode());
+        assertEquals(TransactionStatus.Captured.getValue(), response.getResponseMessage());
+    }
+
+    @Test
+    public void FrictionlessFullCycle_v2_Verify3DS_TokenizedCard() throws ApiException {
+        // Frictionless scenario
+        card.setNumber(CARD_AUTH_SUCCESSFUL_V2_1.cardNumber);
+
+        // Tokenize payment method
+        CreditCardData tokenizedCard = new CreditCardData();
+        tokenizedCard.setToken(card.tokenize());
+
+        assertNotNull(tokenizedCard.getToken());
+
+        // Check enrollment
+        ThreeDSecure secureEcom =
+                Secure3dService
+                        .checkEnrollment(tokenizedCard)
+                        .withCurrency(currency)
+                        .withAmount(amount)
+                        .execute();
+
+        assertNotNull(secureEcom);
+        assertEquals(ENROLLED, secureEcom.getEnrolledStatus());
+        assertEquals(Secure3dVersion.TWO, secureEcom.getVersion());
+        assertEquals(AVAILABLE, secureEcom.getStatus());
+        assertTrue(secureEcom.isEnrolled());
+
+        // Initiate authentication
+        ThreeDSecure initAuth =
+                Secure3dService
+                        .initiateAuthentication(tokenizedCard, secureEcom)
+                        .withAmount(amount)
+                        .withCurrency(currency)
+                        .withAuthenticationSource(AuthenticationSource.Browser)
+                        .withMethodUrlCompletion(MethodUrlCompletion.Yes)
+                        .withOrderCreateDate(DateTime.now())
+                        .withAddress(shippingAddress, AddressType.Shipping)
+                        .withBrowserData(browserData)
+                        .execute();
+
+        assertNotNull(initAuth);
+        assertEquals(SUCCESS_AUTHENTICATED, initAuth.getStatus());
+
+        // Get authentication data
+        secureEcom =
+                Secure3dService
+                        .getAuthenticationData()
+                        .withServerTransactionId(initAuth.getServerTransactionId())
+                        .execute();
+
+        assertEquals(SUCCESS_AUTHENTICATED, secureEcom.getStatus());
+
+        tokenizedCard.setThreeDSecure(secureEcom);
+
+        Transaction verifyResponse =
+                tokenizedCard
+                        .verify()
+                        .withCurrency(currency)
+                        .execute();
+        assertNotNull(verifyResponse);
+        assertEquals(SUCCESS, verifyResponse.getResponseCode());
+        assertEquals("VERIFIED", verifyResponse.getResponseMessage());
+
+        // Create transaction
+        Transaction response =
+                tokenizedCard
                         .charge(amount)
                         .withCurrency(currency)
                         .execute();
