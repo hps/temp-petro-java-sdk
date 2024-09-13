@@ -15,7 +15,10 @@ import com.global.api.utils.masking.MaskValueUtil;
 import lombok.var;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.global.api.builders.requestbuilder.gpApi.GpApiManagementRequestBuilder.getDccId;
 import static com.global.api.entities.enums.TransactionType.Refund;
@@ -144,6 +147,10 @@ public class GpApiAuthorizationRequestBuilder implements IRequestBuilder<Authori
                     JsonDoc tokenizationData = new JsonDoc();
                     tokenizationData.set("account_name", gateway.getGpApiConfig().getAccessTokenInfo().getTokenizationAccountName());
                     tokenizationData.set("account_id", gateway.getGpApiConfig().getAccessTokenInfo().getTokenizationAccountID());
+                    tokenizationData.set("name", builder.getDescription() != null ? builder.getDescription() : "");
+                    JsonDoc payer = new JsonDoc();
+                    payer.set("id", builder.getCustomerId() != null ? builder.getCustomerId() : "");
+                    tokenizationData.set("payer", payer);
                     tokenizationData.set("reference", isNullOrEmpty(builder.getClientTransactionId()) ? java.util.UUID.randomUUID().toString() : builder.getClientTransactionId());
                     tokenizationData.set("usage_mode", builder.getPaymentMethodUsageMode());
                     tokenizationData.set("card", card);
@@ -234,14 +241,27 @@ public class GpApiAuthorizationRequestBuilder implements IRequestBuilder<Authori
                             verificationData.set("stored_credential", storedCredential);
                         }
 
-                        if (builderPaymentMethod instanceof ITokenizable && !StringUtils.isNullOrEmpty(((ITokenizable) builderPaymentMethod).getToken())) {
+                        if (builderPaymentMethod instanceof ITokenizable) {
                             verificationData.remove("payment_method");
-                            verificationData.set("payment_method",
-                                    new JsonDoc()
-                                            .set("entry_mode", getEntryMode(builder, gateway.getGpApiConfig().getChannel().getValue()))
-                                            .set("id", ((ITokenizable) builderPaymentMethod).getToken())
-                                            .set("fingerprint_mode", builder.getCustomerData() != null ? builder.getCustomerData().getDeviceFingerPrint() : null));
+                            if (!StringUtils.isNullOrEmpty(((ITokenizable) builderPaymentMethod).getToken())) {
+                                paymentMethod
+                                        .set("entry_mode", getEntryMode(builder, gateway.getGpApiConfig().getChannel().getValue()))
+                                        .set("id", ((ITokenizable) builderPaymentMethod).getToken())
+                                        .set("fingerprint_mode", builder.getCustomerData() != null ? builder.getCustomerData().getDeviceFingerPrint() : null);
+                            }
+
+                            //Authentication
+                            if (builderPaymentMethod instanceof CreditCardData) {
+                                paymentMethod.set("name", ((CreditCardData) builderPaymentMethod).getCardHolderName());
+                                ThreeDSecure secureEcom = ((CreditCardData) builderPaymentMethod).getThreeDSecure();
+                                if (secureEcom != null) {
+                                    var authentication = new JsonDoc().set("id", secureEcom.getServerTransactionId());
+                                    paymentMethod.set("authentication", authentication);
+                                }
+                            }
                         }
+
+                        verificationData.set("payment_method", paymentMethod);
 
                         return (GpApiRequest)
                                 new GpApiRequest()
@@ -680,11 +700,6 @@ public class GpApiAuthorizationRequestBuilder implements IRequestBuilder<Authori
                         .setMaskedData(maskedData);
     }
 
-    @Override
-    public boolean canProcess(Object builder) {
-        return builder instanceof AuthorizationBuilder;
-    }
-
     private static JsonDoc setNotificationUrls(AuthorizationBuilder builder) {
         INotificationData payment = null;
         IPaymentMethod builderPaymentMethod = builder.getPaymentMethod();
@@ -715,7 +730,10 @@ public class GpApiAuthorizationRequestBuilder implements IRequestBuilder<Authori
 
     private static JsonDoc setPayerInformation(AuthorizationBuilder builder) {
         JsonDoc payer = new JsonDoc();
-        payer.set("reference", builder.getCustomerId() != null ? builder.getCustomerId() : (builder.getCustomerData() != null ? builder.getCustomerData().getId() : null));
+        String payerId = builder.getCustomerId() != null ? builder.getCustomerId() : (builder.getCustomerData() != null ? builder.getCustomerData().getId() : null);
+        payer.set("id", payerId);
+        String payerReference = builder.getCustomerData() != null ? builder.getCustomerData().getKey() : null;
+        payer.set("reference", payerReference);
 
         if (builder.getPaymentMethod() instanceof eCheck) {
             JsonDoc billingAddress = GetBasicAddressInformation(builder.getBillingAddress());

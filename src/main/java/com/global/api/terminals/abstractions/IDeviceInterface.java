@@ -33,6 +33,7 @@ public interface IDeviceInterface extends IDisposable {
     void sendReady() throws ApiException; //UPA
     IDeviceResponse registerPOS(RegisterPOS data) throws ApiException; //UPA
     IDeviceResponse printReceipt(PrintData data) throws ApiException;//UPA
+    String getParams() throws ApiException; //UPA
     ISignatureResponse promptForSignature() throws ApiException;
     ISignatureResponse promptForSignature(String transactionId) throws ApiException;    
     IDeviceResponse reboot() throws ApiException;
@@ -91,7 +92,7 @@ public interface IDeviceInterface extends IDisposable {
     TerminalAuthBuilder ebtRefund(BigDecimal amount) throws ApiException;
     TerminalAuthBuilder ebtWithdrawal() throws ApiException;
     TerminalAuthBuilder ebtWithdrawal(BigDecimal amount) throws ApiException;
-    
+
     // report calls
     SAFSummaryReport safSummaryReport(SafReportSummary safReportIndicator) throws ApiException;
     IBatchReportResponse getBatchSummary() throws ApiException;
@@ -103,7 +104,9 @@ public interface IDeviceInterface extends IDisposable {
     ISAFResponse safDelete(String referenceNumber,String transactionNumber) throws ApiException;
     TerminalResponse getTransactionDetails(TransactionType transactionType, String transactionId, TransactionIdType transactionIdType) throws ApiException;
     TerminalManageBuilder refundById(BigDecimal amount) throws ApiException;
+    TerminalManageBuilder refundById() throws ApiException;
     ISAFResponse safSummaryReport(String printData, String reportData) throws ApiException;
     TerminalReportBuilder localDetailReport() throws ApiException;
+    TerminalManageBuilder increasePreAuth(BigDecimal amount) throws ApiException;
     TerminalManageBuilder deletePreAuth() throws ApiException;
 }

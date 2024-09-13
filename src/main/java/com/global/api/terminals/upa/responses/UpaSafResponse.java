@@ -19,7 +19,6 @@ public class UpaSafResponse implements ISAFResponse {
     private Map<SummaryType, SummaryResponse> approved;
     private Map<SummaryType, SummaryResponse> pending;
     private Map<SummaryType, SummaryResponse> declined;
-    private String command;
     private String deviceResponseCode;
     private String deviceResponseText;
     private String status;
@@ -42,8 +41,6 @@ public class UpaSafResponse implements ISAFResponse {
     private static final String SAF_TOTAL = "SafTotal";
     private static final String SAF_RECORDS = "SafRecords";
     private static final String TOTAL_AMOUNT = "totalAmount";
-    private static final String AUTHORIZED_AMOUNT = "authorizedAmount";
-    private static final String TRANS_ID = "transId";
     private static final String TRANSACTION_TIME = "transactionTime";
     private static final String TRANSACTION_TYPE = "transactionType";
     private static final String MASKED_PAN = "maskedPan";
@@ -52,7 +49,6 @@ public class UpaSafResponse implements ISAFResponse {
     private static final String RESPONSE_CODE = "responseCode";
     private static final String RESPONSE_TEXT = "responseText";
     private static final String REFERENCE_NO = "referenceNumber";
-    private static final String HOST_TIMEOUT = "hostTimeout";
     private static final String BASE_AMOUNT = "baseAmount";
     private static final String TAX_AMOUNT = "taxAmount";
     private static final String TIP_AMOUNT = "tipAmount";
@@ -94,9 +90,6 @@ public class UpaSafResponse implements ISAFResponse {
                     safDetails.forEach(safDetail -> {
                         SummaryResponse summaryResponse= new SummaryResponse();
 
-
-                        TransactionSummary transactionSummary = new TransactionSummary();
-
                         if (safDetail.getString(SAF_TYPE) != null) {
                             summaryResponse.summaryType = mapSafType(safDetail.getString(SAF_TYPE));
                         }
@@ -107,37 +100,60 @@ public class UpaSafResponse implements ISAFResponse {
                             summaryResponse.totalAmount = safDetail.getDecimal(SAF_TOTAL);
                         }
 
-                        transactionSummary.setSafTotal(safDetail.getString(SAF_TOTAL));
+                        List<JsonDoc> safRecords = safDetail.getEnumerator(SAF_RECORDS);
+                        if (safRecords != null) {
+                            safRecords.forEach(safRecord -> {
+                                TransactionSummary transactionSummary = new TransactionSummary();
+                                transactionSummary.setApprovalCode(safRecord.getString("approvalCode"));
+                                transactionSummary.setMaskedCardNumber(safRecord.getString(MASKED_PAN));
+                                transactionSummary.setPinVerified(safRecord.getString("PinVerified"));
+                                transactionSummary.setGatewayResponseCode(safRecord.getString(RESPONSE_CODE));
+                                transactionSummary.setAvailableBalance(safRecord.getDecimal("availableBalance"));
+                                transactionSummary.setGatewayResponseMessage(safRecord.getString(RESPONSE_TEXT));
+                                transactionSummary.setAppName(safRecord.getString("appName"));
+                                transactionSummary.setTranNo(safRecord.getString("tranNo"));
+                                transactionSummary.setSafReferenceNumber(safRecord.getString("safReferenceNumber"));
 
-                            List<JsonDoc> safRecords = safDetail.getEnumerator(SAF_RECORDS);
-                            if (safRecords != null) {
-                                safRecords.forEach(safRecord -> {
+                                try {
+                                    transactionSummary.setTransactionDate(safRecord.getDateTime("transactionTime"));
+                                } catch (GatewayException ignored) { }
 
-                                    transactionSummary.setApprovalCode(safRecord.getString("approvalCode"));
-                                    transactionSummary.setMaskedCardNumber(safRecord.getString(MASKED_PAN));
-                                    transactionSummary.setPinVerified(safRecord.getString("PinVerified"));
-                                    if (safRecord.getDecimal(TIP_AMOUNT) != null) {
-                                        transactionSummary.setGratuityAmount(safRecord.getDecimal(TIP_AMOUNT));
-                                    }
-                                    transactionSummary.setGatewayResponseMessage(safRecord.getString(RESPONSE_TEXT));
-                                    transactionSummary.setAppName(safRecord.getString("appName"));
-                                    transactionSummary.setTranNo(safRecord.getString("tranNo"));
-                                    transactionSummary.setSafReferenceNumber(safRecord.getString("safReferenceNumber"));
+                                if (safRecord.getDecimal(TIP_AMOUNT) != null)
+                                    transactionSummary.setGratuityAmount(safRecord.getDecimal(TIP_AMOUNT));
 
-                                    try {
-                                        transactionSummary.setTransactionDate(safRecord.getDateTime("transactionTime"));
-                                    } catch (GatewayException e) {
-                                    }
-                                    if (safRecord.getDecimal(BASE_AMOUNT) != null) {
-                                        transactionSummary.setBaseAmount(safRecord.getDecimal(BASE_AMOUNT));
-                                    }
-                                    transactionSummary.setGatewayResponseCode(safRecord.getString(RESPONSE_CODE));
-                                    transactionSummary.setAvailableBalance(safRecord.getDecimal("availableBalance"));
+                                if (safRecord.getDecimal(BASE_AMOUNT) != null)
+                                    transactionSummary.setBaseAmount(safRecord.getDecimal(BASE_AMOUNT));
 
-                                     summaryResponse.transactions.add(transactionSummary);
+                                if (safRecord.getDecimal("baseDue") != null)
+                                    transactionSummary.setAmountDue(safRecord.getDecimal("baseDue"));
 
-                                });
-                            }
+                                if (safRecord.getDecimal(REQUEST_AMOUNT) != null) {
+                                    transactionSummary.setRequestAmount(safRecord.getDecimal(REQUEST_AMOUNT));
+
+                                    // re-uses "totalAmount" device response property, but this
+                                    // might help call attention to the transaction being a partial
+                                    // authorization
+                                    transactionSummary.setAuthorizedAmount(safRecord.getDecimal("totalAmount"));
+                                }
+
+                                if (safRecord.getString("expiryDate") != null)
+                                    transactionSummary.setExpiryDate(safRecord.getString("expiryDate"));
+
+                                if (safRecord.getString("referenceNumber") != null)
+                                    transactionSummary.setTransactionId(safRecord.getString("referenceNumber"));
+
+                                if (safRecord.getString("maskedPan") != null)
+                                    transactionSummary.setMaskedCardNumber(safRecord.getString("maskedPan"));
+
+                                if (safRecord.getString("invoiceNbr") != null)
+                                    transactionSummary.setInvoiceNumber(safRecord.getString("invoiceNbr"));
+
+                                if (safRecord.getDecimal("totalAmount") != null)
+                                    transactionSummary.setTotalAmount(safRecord.getString("totalAmount"));
+
+                                summaryResponse.transactions.add(transactionSummary);
+                            });
+                        }
 
                         if(summaryResponse.summaryType.equals(SummaryType.Declined)){
                             if (declined == null) {
@@ -182,7 +198,7 @@ public class UpaSafResponse implements ISAFResponse {
 
     @Override
     public String getCommand() {
-        return command;
+        return null;
     }
 
     @Override

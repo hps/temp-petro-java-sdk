@@ -37,8 +37,8 @@ import java.util.HashMap;
 
 import static com.global.api.utils.StringUtils.isNullOrEmpty;
 
-public class GpApiConnector extends RestGateway implements IPaymentGateway, IReportingService, ISecure3dProvider,
-        IPayFacProvider, IFraudCheckService, IFileProcessingService {
+public class GpApiConnector extends RestGateway implements IPaymentGateway, IReportingService, ISecure3dProvider, 
+        IPayFacProvider, IFraudCheckService, IFileProcessingService, IRecurringGateway, IDeviceCloudService {
 
     public static final SimpleDateFormat DATE_SDF = DateParsingUtils.DATE_SDF;
     public static final DateTimeFormatter DATE_TIME_DTF = DateParsingUtils.DATE_TIME_DTF;
@@ -46,6 +46,23 @@ public class GpApiConnector extends RestGateway implements IPaymentGateway, IRep
     private static final String IDEMPOTENCY_HEADER = "x-gp-idempotency";
     public final boolean hasBuiltInMerchantManagementService() {
         return true;
+    }
+    public boolean supportsRetrieval() throws ApiException { throw new ApiException("NOT IMPLEMENTED"); }
+    public boolean supportsUpdatePaymentDetails() throws ApiException { throw new ApiException("NOT IMPLEMENTED"); }
+
+
+    @Override
+    public <T> T processRecurring(RecurringBuilder<T> builder, Class<T> clazz) throws ApiException {
+        T result = null;
+        if (isNullOrEmpty(accessToken)) {
+            signIn();
+        }
+        GpApiRequest request = new GpApiRecurringRequestBuilder().buildRequest(builder, this);
+        if (request != null){
+            String response = doTransaction(request.getVerb().getValue(), request.getEndpoint(), request.getRequestBody());
+            return (T) GpApiMapping.mapRecurringEntity(response, builder.getEntity());
+        }
+        return result;
     }
 
     private String accessToken;
@@ -183,7 +200,13 @@ public class GpApiConnector extends RestGateway implements IPaymentGateway, IRep
         try {
             rawResponse = super.doTransaction(request.getVerb().getValue(), request.getEndpoint(), request.getRequestBody(), null);
         } catch (GatewayException ex) {
-            generateGpApiException(ex.getResponseCode(), ex.getResponseText());
+            try {
+                Integer.parseInt(ex.getResponseCode());
+                generateGpApiException(ex.getResponseCode(), ex.getResponseText());
+                throw ex;
+            } catch (NumberFormatException nfe) {
+                throw ex;
+            }
         }
 
         return new GpApiTokenResponse(rawResponse);
@@ -223,8 +246,13 @@ public class GpApiConnector extends RestGateway implements IPaymentGateway, IRep
 
                 return doTransactionWithIdempotencyKey(verb, endpoint, data, queryStringParams, idempotencyKey);
             }
-            generateGpApiException(ex.getResponseCode(), ex.getResponseText());
-            throw ex;
+            try {
+                Integer.parseInt(ex.getResponseCode());
+                generateGpApiException(ex.getResponseCode(), ex.getResponseText());
+                throw ex;
+            } catch (NumberFormatException nfe) {
+                throw ex;
+            }
         }
     }
 
@@ -366,6 +394,24 @@ public class GpApiConnector extends RestGateway implements IPaymentGateway, IRep
         throw new UnsupportedTransactionException("Method processPayFac() not supported");
     }
 
+    @Override
+    public String processPassThrough(JsonDoc rawRequest) throws ApiException {
+        if (StringUtils.isNullOrEmpty(accessToken)) {
+            signIn();
+        }
+
+        GpApiRequest request = new GpApiMiCRequestBuilder().buildRequest(rawRequest.toString(), this);
+
+        if (request != null) {
+            return doTransaction(
+                    request.getVerb().getValue(),
+                    request.getEndpoint(),
+                    request.getRequestBody(),
+                    request.getQueryStringParams());
+        }
+        return null;
+    }
+
     // --------------------------------------------------------------------------------
     // NOT IMPLEMENTED METHODS FROM IMPLEMENTING INTERFACES
     // --------------------------------------------------------------------------------
@@ -444,6 +490,7 @@ public class GpApiConnector extends RestGateway implements IPaymentGateway, IRep
 
         return null;
     }
+
     // --------------------------------------------------------------------------------
 
 }
