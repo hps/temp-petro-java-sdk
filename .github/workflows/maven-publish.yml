@@ -50,4 +50,4 @@ jobs:
         run: mvn -DskipTests=true --batch-mode verify
       
       - name: Release package
-        run: mvn clean deploy -e -X -P release -DskipTests -Darguments=-DskipTests -Dmaven.javadoc.skip=true
+        run: mvn clean deploy -e -X -P release -DskipTests -Darguments=-DskipTests
