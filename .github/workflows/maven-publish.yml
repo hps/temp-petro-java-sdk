@@ -15,6 +15,35 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
+      - name: Set up maven settings
+        uses: whelk-io/maven-settings-xml-action@v22
+        with:
+          servers: >
+            [
+              {
+                "id": "sonatype-nexus-snapshots",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_PASSWORD }}"
+              },
+              {
+                "id": "sonatype-nexus-staging",
+                "username": "${{ secrets.OSSRH_USERNAME }}",
+                "password": "${{ secrets.OSSRH_PASSWORD }}"
+              }
+            ]
+          profiles: >
+            [
+              {
+                "id": "sign",
+                "activation": {
+                   "activeByDefault": "true"
+                },
+                "properties": {
+                  "gpg.passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
+                }
+              }
+            ]
+      
       - name: Release Maven package
         uses: WasiqB/maven-publish-action@v1
         with:
