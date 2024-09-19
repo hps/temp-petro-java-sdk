@@ -2,52 +2,23 @@ name: Publish to Maven Central Repository
 on: workflow_dispatch
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Install gpg secret key
-        run: export GPG_TTY=$(tty) && cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
-      
-      - name: Set up Maven Central Repository
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Install Java and Maven
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: 17
           distribution: 'temurin'
-      
-      - name: Set up maven settings
-        uses: whelk-io/maven-settings-xml-action@v22
+          cache: 'maven'
+
+      - name: Release Maven package
+        uses: WasiqB/maven-publish-action@v1
         with:
-          servers: >
-            [
-              {
-                "id": "sonatype-nexus-snapshots",
-                "username": "${{ secrets.OSSRH_USERNAME }}",
-                "password": "${{ secrets.OSSRH_PASSWORD }}"
-              },
-              {
-                "id": "sonatype-nexus-staging",
-                "username": "${{ secrets.OSSRH_USERNAME }}",
-                "password": "${{ secrets.OSSRH_PASSWORD }}"
-              }
-            ]
-          profiles: >
-            [
-              {
-                "id": "sign",
-                "activation": {
-                   "activeByDefault": "true"
-                },
-                "properties": {
-                  "gpg.passphrase": "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}"
-                }
-              }
-            ]
-      
-      - name: Verify package
-        run: mvn -DskipTests=true --batch-mode verify
-      
-      - name: Release package
-        run: mvn clean deploy -e -X -P release -DskipTests -Darguments=-DskipTests
+          gpg_private_key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          gpg_passphrase: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
+          nexus_username: ${{ secrets.OSSRH_USERNAME }}
+          nexus_password: ${{ secrets.OSSRH_PASSWORD }}
