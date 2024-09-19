@@ -48,7 +48,7 @@ jobs:
         uses: WasiqB/maven-publish-action@v1
         with:
           settings_path: "/home/runner/.m2/settings.xml"
-          maven_goals_phases: "deploy"
+          maven_profiles: "release"
           maven_args: "-DskipTests -Darguments=-DskipTests"
           gpg_private_key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
           gpg_passphrase: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
