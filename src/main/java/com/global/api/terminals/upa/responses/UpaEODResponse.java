@@ -42,17 +42,15 @@ public class UpaEODResponse implements IEODResponse {
 
     public UpaEODResponse(JsonDoc responseObj) {
         messageId = UpaMessageId.EODProcessing;
-
-        JsonDoc outerData = isGpApiResponse(responseObj) ? responseObj.get("response") : responseObj.get(DATA);
+        JsonDoc outerData = responseObj.get(DATA);
 
         if (outerData != null) {
             JsonDoc cmdResult = outerData.get(CMD_RESULT);
 
             if (cmdResult != null) {
-                status = isGpApiResponse(responseObj) ? responseObj.getString("status") : cmdResult.getString(RESULT);
-                boolean isSuccess = (status.equalsIgnoreCase(SUCCESS) || status.equalsIgnoreCase("COMPLETE"));
-                deviceResponseCode =  isSuccess ? ZERO : cmdResult.getString(ERROR_CODE);
-                deviceResponseText = isSuccess ? status : cmdResult.getString(ERROR_MESSAGE);
+                status = cmdResult.getString(RESULT);
+                deviceResponseCode = status.equalsIgnoreCase(SUCCESS) ? ZERO : cmdResult.getString(ERROR_CODE);
+                deviceResponseText = cmdResult.getString(ERROR_MESSAGE);
             }
 
             JsonDoc innerData = outerData.get(DATA);
@@ -197,12 +195,5 @@ public class UpaEODResponse implements IEODResponse {
 
     public void setVersion(String version) {
 
-    }
-
-    private boolean isGpApiResponse(JsonDoc root) {
-        if (root.has("data")) {
-            return false;
-        }
-        return true;
     }
 }

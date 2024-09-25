@@ -4,7 +4,6 @@ import com.global.api.entities.TransactionSummary;
 import com.global.api.entities.enums.ConnectionModes;
 import com.global.api.entities.enums.DeviceType;
 import com.global.api.entities.exceptions.ApiException;
-import com.global.api.logging.RequestConsoleLogger;
 import com.global.api.services.DeviceService;
 import com.global.api.terminals.ConnectionConfig;
 import com.global.api.terminals.abstractions.IBatchReportResponse;
@@ -30,12 +29,11 @@ public class UpaBatchTests {
     public UpaBatchTests() throws ApiException {
         ConnectionConfig config = new ConnectionConfig();
         config.setPort(8081);
-        config.setIpAddress("192.168.8.181");
-        config.setTimeout(45000);
+        config.setIpAddress("192.168.0.198");
+        config.setTimeout(30000);
         config.setRequestIdProvider(new RandomIdProvider());
         config.setDeviceType(DeviceType.UPA_DEVICE);
         config.setConnectionMode(ConnectionModes.TCP_IP);
-        config.setRequestLogger(new RequestConsoleLogger());
 
 //        config.setRequestLogger(new RequestFileLogger("batchTests.txt"));
 
@@ -46,19 +44,15 @@ public class UpaBatchTests {
     }
 
     @Test
-    public void test01_prepareBatch() throws ApiException, InterruptedException {
+    public void test01_prepareBatch() throws ApiException {
         assertTrue(device.getBatchSummary().getDeviceResponseText().equalsIgnoreCase("EMPTY BATCH"));
-
-        Thread.sleep(5000);
 
         // use Visa card
         runBasicTests(
             device.creditSale(new BigDecimal("12.01"))
-                    .withGratuity(new BigDecimal("0"))
+                    .withGratuity(new BigDecimal("0.00"))
                     .execute()
         );
-
-        Thread.sleep(5000);
 
         // use Amex card
         runBasicTests(
@@ -101,25 +95,6 @@ public class UpaBatchTests {
     }
 
     @Test
-    public void test03_BatchDetailsReport_FindById() throws ApiException {
-        IBatchReportResponse response = device.getBatchDetails("1006209", false);
-
-        runBasicTests(response);
-        assertNotNull(response.getBatchSummary().getBatchId());
-        assertEquals("6", response.getBatchSummary().getTransactionCount().toString());
-        assertEquals(new BigDecimal("41.12"), response.getBatchSummary().getTotalAmount());
-        assertNotNull(response.getBatchSummary().getOpenTime());
-        assertNotNull(response.getBatchSummary().getOpenTransactionId());
-
-        ArrayList<TransactionSummary> transactions = response.getTransactionSummaries();
-        transactions.forEach((n) -> {
-            assertNotNull(n.getTransactionType());
-            assertNotNull(n.getTransactionId());
-            assertNotNull(n.getAmount());
-        });
-    }
-
-    @Test
     public void test04_OpenTabDetailsReport() throws ApiException {
         IBatchReportResponse response = device.getOpenTabDetails();
 
@@ -132,7 +107,6 @@ public class UpaBatchTests {
                 runBasicTests(
                     device.creditCapture(n.getAuthorizedAmount())
                             .withGratuity(new BigDecimal("0.00"))
-                            .withTerminalRefNumber(n.getTransactionId())
                             .withTransactionId(n.getTransactionId())
                             .execute()
                 );

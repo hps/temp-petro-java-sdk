@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Element implements IRawRequestBuilder {
+public class Element {
     private Document doc;
     private org.w3c.dom.Element element;
     private Map<String, String> namespaces;
@@ -207,6 +207,4 @@ public class Element implements IRawRequestBuilder {
 
         return node;
     }
-
-
 }

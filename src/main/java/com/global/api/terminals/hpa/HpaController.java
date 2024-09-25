@@ -17,6 +17,7 @@ import com.global.api.terminals.builders.TerminalManageBuilder;
 import com.global.api.terminals.hpa.interfaces.HpaTcpInterface;
 import com.global.api.terminals.hpa.responses.SipBaseResponse;
 import com.global.api.terminals.hpa.responses.SipDeviceResponse;
+import com.global.api.terminals.pax.responses.LocalDetailReportResponse;
 import com.global.api.utils.Element;
 import com.global.api.utils.ElementTree;
 import com.global.api.utils.StringUtils;
@@ -144,8 +145,8 @@ public class HpaController extends DeviceController implements IDisposable {
     }
 
     @Override
-    public ITerminalReport processReport(TerminalReportBuilder builder) throws ApiException {
-        throw new UnsupportedTransactionException("This transaction is not currently supported for this payment type.");
+    public LocalDetailReportResponse processLocalDetailReport(TerminalReportBuilder builder) throws ApiException {
+        throw  new UnsupportedTransactionException();
     }
 
     private String mapTransactionType(TransactionType type) throws UnsupportedTransactionException {

@@ -5,6 +5,5 @@ public enum ConnectionModes {
     TCP_IP,
     SSL_TCP,
     HTTP,
-    MEET_IN_THE_CLOUD,
-    DIAMOND_CLOUD
+    MEET_IN_THE_CLOUD
 }

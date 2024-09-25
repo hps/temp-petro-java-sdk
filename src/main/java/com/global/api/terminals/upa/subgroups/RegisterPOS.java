@@ -13,7 +13,4 @@ public class RegisterPOS {
     @Getter
     @Setter
     private Boolean remove = false;
-    @Getter
-    @Setter
-    public Integer silent;
 }

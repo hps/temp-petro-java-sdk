@@ -4,8 +4,6 @@ import com.global.api.terminals.TerminalResponse;
 import com.global.api.terminals.upa.Entities.Enums.UpaMessageId;
 import com.global.api.utils.JsonDoc;
 
-import static com.global.api.entities.enums.GatewayProvider.GP_API;
-
 public class UpaDeviceResponse extends TerminalResponse {
     protected UpaMessageId messageId;
 
@@ -26,10 +24,6 @@ public class UpaDeviceResponse extends TerminalResponse {
 
                 if (status.equalsIgnoreCase("success")) deviceResponseCode = "00";
             }
-        } else {
-            requestId = responseObj.getStringOrNull("id");
-            deviceResponseText = responseObj.getStringOrNull("status");
-            if (deviceResponseText.equalsIgnoreCase("COMPLETE")) deviceResponseCode = "00";
         }
     }
 }

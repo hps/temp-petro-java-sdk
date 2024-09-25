@@ -3,11 +3,10 @@ package com.global.api.terminals.pax.responses;
 import com.global.api.entities.enums.ControlCodes;
 import com.global.api.entities.enums.PaxMsgId;
 import com.global.api.entities.exceptions.MessageException;
-import com.global.api.terminals.abstractions.ITerminalReport;
 import com.global.api.terminals.pax.subgroups.*;
 import com.global.api.utils.MessageReader;
 
-public class LocalDetailReportResponse  extends PaxDeviceResponse  implements ITerminalReport {
+public class LocalDetailReportResponse  extends PaxDeviceResponse {
 
     private String totalRecords;
     private String recordNumber;

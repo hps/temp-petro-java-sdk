@@ -15,7 +15,7 @@ public class RequestTransactionFields {
     private String baseAmount;
     private boolean commercialRequest;
     private BigDecimal taxAmount;
-    private String tipAmount;
+    private BigDecimal tipAmount;
     private Integer taxIndicator;
     private BigDecimal cashBackAmount;
     private Integer invoiceNbr;
@@ -33,16 +33,12 @@ public class RequestTransactionFields {
             getDeletePreAuthRequestParam(builder);
             return;
         }
-        if(builder.getTransactionType().equals(TransactionType.Void)){
-            getVoidRequestParam(builder);
-            return;
-        }
         if (builder.getTerminalRefNumber() != null) {
             this.terminalRefNumber = builder.getTerminalRefNumber();
         }
 
         if (builder.getGratuity() != null) {
-            this.tipAmount = StringUtils.toCurrencyString(builder.getGratuity());
+            this.tipAmount = builder.getGratuity();
         }
 
         if (builder.getTransactionId() != null && !builder.getTransactionType().equals(TransactionType.Capture)) {
@@ -50,7 +46,7 @@ public class RequestTransactionFields {
         }
 
         if (builder.getAmount() != null) {
-            this.amount = builder.getAmount().toString();
+            this.amount = StringUtils.toCurrencyString(builder.getAmount());
         }
         if (builder.getPreAuthAmount() != null) {
             this.preAuthAmount = StringUtils.toCurrencyString(builder.getPreAuthAmount());
@@ -61,11 +57,11 @@ public class RequestTransactionFields {
     public void setParams(TerminalAuthBuilder builder) {
         if (builder.getAmount() != null) {
             if (builder.getTransactionType() == TransactionType.Refund || builder.getTransactionType() == TransactionType.Activate) {
-                this.totalAmount = StringUtils.toCurrencyString(builder.getAmount());
+                this.totalAmount = builder.getAmount().toString();
             } else if (builder.getTransactionType() == TransactionType.Auth) {
-                this.amount = builder.getAmount().toString();
+                this.amount = StringUtils.toCurrencyString(builder.getAmount());
             } else {
-                this.baseAmount = StringUtils.toCurrencyString(builder.getAmount());
+                this.baseAmount = builder.getAmount().toString();
             }
         }
 
@@ -74,7 +70,7 @@ public class RequestTransactionFields {
         }
 
         if (builder.getGratuity() != null) {
-            this.tipAmount = StringUtils.toCurrencyString(builder.getGratuity());
+            this.tipAmount = builder.getGratuity();
         }
 
         if (builder.getCashBackAmount() != null) {
@@ -206,15 +202,6 @@ public class RequestTransactionFields {
 
             if (builder.getPreAuthAmount() != null) {
                 this.preAuthAmount = builder.getPreAuthAmount().toString();
-        }
-    }
-
-    private void getVoidRequestParam(TerminalManageBuilder builder) {
-        if (builder.getTerminalRefNumber() != null) {
-            this.gatewayRefNumber = builder.getTerminalRefNumber();
-        }
-        if (builder.getTransactionId() != null) {
-            this.terminalRefNumber = builder.getTransactionId();
         }
     }
 }
