@@ -40,6 +40,11 @@
   <profiles>
     <profile>
       <id>release</id>
+      <activation>
+    	<property>
+          <name>gpg.passphrase</name>
+        </property>
+      </activation>
       <build>
         <plugins>
           <plugin>
@@ -87,13 +92,20 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <version>1.6</version>
             <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
+                <execution>
+                    <id>sign-artifacts</id>
+                    <phase>verify</phase>
+                    <goals>
+                        <goal>sign</goal>
+                    </goals>
+                    <configuration>
+                        <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                        <gpgArguments>
+                            <arg>--pinentry-mode</arg>
+                            <arg>loopback</arg>
+                        </gpgArguments>
+                    </configuration>
+                </execution>
             </executions>
           </plugin>
         </plugins>
