@@ -1827,7 +1827,6 @@ public class GpEcomHppRequestTest {
         HostedPaymentData hostedPaymentData = new HostedPaymentData();
         hostedPaymentData.setCaptureAddress(true);
         hostedPaymentData.setReturnAddress(false);
-        hostedPaymentData.setRemoveShipping(true);
 
         String json =
                 service
@@ -1842,7 +1841,6 @@ public class GpEcomHppRequestTest {
 
         assertEquals("TRUE", jsonResponse.getString("HPP_CAPTURE_ADDRESS"));
         assertEquals("FALSE", jsonResponse.getString("HPP_DO_NOT_RETURN_ADDRESS"));
-        assertEquals("TRUE", jsonResponse.getString("HPP_REMOVE_SHIPPING"));
     }
 
     @Test

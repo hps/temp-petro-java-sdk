@@ -165,11 +165,11 @@ public class UpaTcpInterface implements IDeviceCommInterface, IUPAMessage {
     private void getTerminalResponse() throws Exception {
         try {
             validateResponsePacket();
-            byte[] buffer = Arrays.copyOf(data.toArray(), data.length());
+            byte[] buffer = data.toArray();
 
             if (buffer.length > 0) {
                 JsonDoc responseObj = JsonDoc.parse(
-                        new String(buffer, StandardCharsets.UTF_8)
+                        new String(data.toArray(), StandardCharsets.UTF_8)
                 );
 
                 String message = responseObj.getString("message");

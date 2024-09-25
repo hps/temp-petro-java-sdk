@@ -27,7 +27,9 @@ import org.junit.runners.MethodSorters;
 
 import java.math.BigDecimal;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NwsEbtTests {
@@ -100,7 +102,6 @@ public class NwsEbtTests {
         assertTrue(summary.isBalanced());
     }
 
-    /** -----------Cashcard TestCases Starts------------ */
     @Test
     public void test_213_manual_sale() throws ApiException {
         EBTCardData ebtCard = new EBTCardData(EbtCardType.CashBenefit);
@@ -433,9 +434,6 @@ public class NwsEbtTests {
                 .withUniqueDeviceId("0001")
                 .execute();
     }
-    /** -----------Cashcard TestCases Ends------------ */
-
-    /** -----------FoodCards TestCases Starts------------ */
 
     @Test(expected = UnsupportedTransactionException.class)
     public void test_227_swipe_foodStamp_authorization() throws ApiException {
@@ -604,20 +602,4 @@ public class NwsEbtTests {
             assertEquals("400", exc.getReversalResponseCode());
     	}
     }
-    /** -----------FoodCards TestCases Ends------------ */
-
-    /** --------Validation code coverage, refund not allowed for cash benefit------- */
-    @Test
-    public void test_validation_error_coverage() throws ApiException {
-
-        BuilderException builderException = assertThrows(BuilderException.class, ()->{
-            Transaction response = cashCard.refund(new BigDecimal(10))
-                    .withCurrency("USD")
-                    .execute();
-            assertNotNull(response);
-
-        });
-        assertEquals("Refunds are not allowed for cash benefit cards.", builderException.getMessage());
-    }
-
 }

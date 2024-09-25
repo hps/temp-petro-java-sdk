@@ -389,9 +389,9 @@ public class Schedule extends RecurringEntity<Schedule> {
         return RecurringService.get(key, Schedule.class);
     }
 
-    public Schedule saveChanges() throws ApiException {
+    public void saveChanges() throws ApiException {
         try{
-            return RecurringService.edit(this, Schedule.class);
+            RecurringService.edit(this, Schedule.class);
         }
         catch (ApiException e) {
             throw new ApiException("Update failed, see inner exception for more details", e);

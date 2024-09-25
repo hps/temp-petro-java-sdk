@@ -93,7 +93,7 @@ public class NtsDebitTest {
         config.setBinTerminalType(" ");
         config.setInputCapabilityCode(CardDataInputCapability.ContactEmv_MagStripe);
         config.setTerminalId("21");
-        config.setUnitNumber("00001234567");
+        config.setUnitNumber("00066654534");
         config.setSoftwareVersion("21");
         config.setLogicProcessFlag(LogicProcessFlag.Capable);
         config.setTerminalType(TerminalType.VerifoneRuby2Ci);
@@ -157,7 +157,6 @@ public class NtsDebitTest {
 
     @Test //working
     public void test_PinDebit_with_Purchase_03_EMV() throws ApiException {
-        track.setEntryMethod(EntryMethod.ContactEMV);
 
         Transaction response = track.charge(new BigDecimal(142))
                 .withCurrency("USD")
@@ -243,7 +242,7 @@ public class NtsDebitTest {
         Transaction preAuthCompletion = response.preAuthCompletion(new BigDecimal(10))
                 .withNtsRequestMessageHeader(ntsRequestMessageHeader)
                 .withTagData(emvTagData)
-                .execute("ICR");
+                .execute();
 
         assertEquals("00", preAuthCompletion.getResponseCode());
 

@@ -208,7 +208,7 @@ public class NtsConnector extends GatewayConnectorConfig {
         ntsObjectParam.setUnitNumber(unitNumber);
         ntsObjectParam.setTerminalId(terminalId);
         ntsObjectParam.setCompanyId(companyId);
-        ntsObjectParam.setTimeout(builder.getPdlTimeout());
+        ntsObjectParam.setTimeout(getTimeout());
         //Preparing the request
 
         request = NtsRequestObjectFactory.getNtsRequestObject(ntsObjectParam);
@@ -454,7 +454,7 @@ public class NtsConnector extends GatewayConnectorConfig {
         NTSCardTypes cardType = NtsUtils.mapCardType(paymentMethod);
         StringParser sp = new StringParser(buffer);
 
-        displayMaskedResponse(sp, request);
+        displayMaskedResponse(sp);
 
         NtsResponse ntsResponse = NtsResponseObjectFactory.getNtsResponseObject(request,mr.readBytes((int) mr.getLength()), builder);
         NtsHostResponseCode hrc = ntsResponse.getNtsResponseMessageHeader().getNtsNetworkMessageHeader().getResponseCode();
@@ -547,7 +547,7 @@ public class NtsConnector extends GatewayConnectorConfig {
         return result;
     }
 
-    private static void displayMaskedResponse(StringParser sp, IDeviceMessage request) {
+    private static void displayMaskedResponse(StringParser sp) {
         StringBuilder maskedResponse = new StringBuilder("");
         maskedResponse.append(sp.getBuffer());
 
@@ -576,26 +576,8 @@ public class NtsConnector extends GatewayConnectorConfig {
                     maskedResponse.replace(startIndex2, stopIndex2, "****"):maskedResponse;
         }
 
-        MessageReader mr2 = new MessageReader(request.getSendBuffer());
-        mr2.readString(15);
-        String requestStr = new String(mr2.readRemainingBytes()).trim();
-
-        MessageReader mr3 = new MessageReader(sp.getBuffer().getBytes(StandardCharsets.UTF_8));
-        mr3.readString(14);
-        String responseStr = new String(mr3.readRemainingBytes()).trim();
-
-        if(requestStr.contains(responseStr)){
-            String visiblePart = sp.getBuffer().length() > 52 ? sp.getBuffer().substring(0,52) : sp.getBuffer();
-            String maskedPart = sp.getBuffer().length() > 52 ? sp.getBuffer().substring(52).replaceAll(".", "*") : "";
-            String maskedResponse1 = visiblePart + maskedPart;
-
-            NtsUtils.log("--------------------- RESPONSE ---------------------");
-            NtsUtils.log("Response", maskedResponse1);
-        }else{
-            NtsUtils.log("--------------------- RESPONSE ---------------------");
-            NtsUtils.log("Response", maskedResponse.toString());
-        }
-
+        NtsUtils.log("--------------------- RESPONSE ---------------------");
+        NtsUtils.log("Response", maskedResponse.toString());
     }
 
     private <T extends TransactionBuilder<Transaction>> String checkResponse(String responseCode, MessageWriter messageData, T builder) {

@@ -10,7 +10,7 @@ import java.util.*;
 
 import static com.global.api.gateways.DateParsingUtils.parseDateTime;
 
-public class JsonDoc implements IRawRequestBuilder {
+public class JsonDoc {
     public HashMap<String, Object> dict;
     private IRequestEncoder encoder;
     private static final Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -336,7 +336,6 @@ public class JsonDoc implements IRawRequestBuilder {
         }
         return response;
     }
-
     private static List<JsonDoc> parseArray(JsonArray objs, IRequestEncoder encoder) {
         List<JsonDoc> responses = new ArrayList<JsonDoc>();
         for (JsonElement obj: objs) {
@@ -344,14 +343,5 @@ public class JsonDoc implements IRawRequestBuilder {
                 responses.add(parseObject(obj.getAsJsonObject(), encoder));
         }
         return responses;
-    }
-
-    public static boolean isJson(String json) {
-        try {
-            JsonDoc parsed = JsonDoc.parse(json);
-            return parsed != null;
-        } catch (Exception ex) {
-            return false;
-        }
     }
 }

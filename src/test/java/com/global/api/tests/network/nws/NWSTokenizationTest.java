@@ -103,9 +103,7 @@ public class NWSTokenizationTest {
 //        card = TestCards.Unionpaymanual();
 //        card = TestCards.PaypalManual();
     }
-    /**
-    Mastercard testCase
-     */
+
     @Test
     public void test_file_action_Mc() throws ApiException {
         acceptorConfig.setTokenizationOperationType(TokenizationOperationType.Tokenize);
@@ -279,10 +277,6 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
 
-    /**
-     Mastercard Purchasing testCase
-     */
-
     //mastercard purchasing
     @Test
     public void test_file_action_mastercard_purchasing() throws ApiException {
@@ -454,9 +448,7 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
 
-    /**
-     Visa testCase
-     */
+
     //Visa Manual
     @Test
     public void test_file_action_visa() throws ApiException {
@@ -631,9 +623,7 @@ public class NWSTokenizationTest {
         assertNotNull(reverseResponse);
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
-    /**
-     Visa Purchasing testCase
-     */
+
     //Visa Manual
     @Test
     public void test_file_action_visa_purchasing() throws ApiException {
@@ -808,9 +798,7 @@ public class NWSTokenizationTest {
         assertNotNull(reverseResponse);
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
-    /**
-     Visa Corporate testCase
-     */
+
     //visa corporate
     @Test
     public void test_file_action_visa_corporate() throws ApiException {
@@ -989,9 +977,7 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
 
-    /**
-     Discover testCase
-     */
+
     //discover
     @Test
     public void test_file_action_discover() throws ApiException {
@@ -1168,9 +1154,6 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
     //Amex
-    /**
-     American Express testCase
-     */
 
     @Test
     public void test_file_action_amex() throws ApiException {
@@ -1346,9 +1329,6 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
     //JCB
-    /**
-     JCB testCase
-     */
     @Test
     public void test_file_action_jcb() throws ApiException {
         acceptorConfig.setTokenizationOperationType(TokenizationOperationType.Tokenize);
@@ -1524,9 +1504,6 @@ public class NWSTokenizationTest {
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
     //Union Pay
-    /**
-     Union Pay testCase
-     */
     @Test
     public void test_file_action_union_pay() throws ApiException {
         acceptorConfig.setTokenizationOperationType(TokenizationOperationType.Tokenize);
@@ -1700,9 +1677,7 @@ public class NWSTokenizationTest {
         assertNotNull(reverseResponse);
         assertEquals(response.getResponseMessage(), "400", reverseResponse.getResponseCode());
     }
-    /**
-     Paypal testCase
-     */
+
     //Paypal
     @Test
     public void test_file_action_paypal() throws ApiException {
@@ -1891,9 +1866,7 @@ public class NWSTokenizationTest {
 
 
     //*********************** combined 3des/tokenization ****************************
-    /**
-     Combined 3des/tokenization testCase
-     */
+
     @Test
     public void test_file_action_combined_MC() throws ApiException {
         acceptorConfig.setTokenizationOperationType(TokenizationOperationType.Tokenize);

@@ -1003,11 +1003,7 @@ public class VapsConnector extends GatewayConnectorConfig {
         }
         // DE 50: Currency Code, Reconciliation - n3
         if(transactionType.equals(TransactionType.BatchClose) && !currencyCode.equals(Iso4217_CurrencyCode.USD)) {
-            if(!StringUtils.isNullOrEmpty(builder.getCurrency())) {
-                if(builder.getCurrency().equalsIgnoreCase("CAD")) {
-                    request.set(DataElementId.DE_050, Iso4217_CurrencyCode.CAD);
-                }
-            }
+            request.set(DataElementId.DE_050,currencyCode.getValue());
         }
 
         // DE 52: Personal Identification Number (PIN)
@@ -1180,10 +1176,7 @@ public class VapsConnector extends GatewayConnectorConfig {
             DE127_ForwardingData forwardingData = new DE127_ForwardingData();
             if (paymentMethod instanceof TransactionReference) {
                 TransactionReference reference = (TransactionReference) paymentMethod;
-                String card =null;
-                if(reference.getOriginalPaymentMethod() instanceof GiftCard) {
-                    card = ((GiftCard) reference.getOriginalPaymentMethod()).getCardType();
-                }
+
             if(reference.getOriginalPaymentMethod() != null && reference.getOriginalPaymentMethod() instanceof IEncryptable) {
                 EncryptionData encryptionData = ((IEncryptable) reference.getOriginalPaymentMethod()).getEncryptionData();
                 String encryptedPan = null;
@@ -1191,13 +1184,13 @@ public class VapsConnector extends GatewayConnectorConfig {
                 if (encryptionData != null && encryptionData.getEncryptedKTB() != null) {
                     encryptedKTB = encryptionData.getEncryptedKTB();
                 }
-                boolean nonOriginalTransactions = (!("ValueLink").equals(card)) && (transactionType.equals(TransactionType.Capture) || transactionType.equals(TransactionType.PreAuthCompletion) || transactionType.equals(TransactionType.Reversal) || transactionType.equals(TransactionType.Void)
-                        || transactionType.equals(TransactionType.Refund));
+                boolean nonOriginalTransactions = transactionType.equals(TransactionType.Capture) || transactionType.equals(TransactionType.PreAuthCompletion) || transactionType.equals(TransactionType.Reversal) || transactionType.equals(TransactionType.Void)
+                        || transactionType.equals(TransactionType.Refund);
 
                 if (nonOriginalTransactions) {
                     if ((reference.getOriginalPaymentMethod() instanceof Credit || ((reference.getOriginalPaymentMethod() instanceof Debit
                             || reference.getOriginalPaymentMethod() instanceof EBTTrackData) && !(transactionType.equals(TransactionType.Refund))) ||
-                             reference.getOriginalPaymentMethod() instanceof EBTCardData)) {
+                            reference.getOriginalPaymentMethod() instanceof GiftCard || reference.getOriginalPaymentMethod() instanceof EBTCardData)) {
                         encryptedPan = ((IEncryptable) reference.getOriginalPaymentMethod()).getEncryptedPan();
                     }
                 }
@@ -1258,7 +1251,6 @@ public class VapsConnector extends GatewayConnectorConfig {
             throw new BuilderException("The transaction token cannot be null for resubmitted transactions.");
         }
         String currency = builder.getCurrency();
-
         // get the original request/implied capture
         NetworkMessage request = this.decodeRequest(builder.getTransactionToken());
         switch(builder.getTransactionType()) {
@@ -1268,10 +1260,8 @@ public class VapsConnector extends GatewayConnectorConfig {
                 if(builder.isForceToHost()) {
                     request.set(DataElementId.DE_025, DE25_MessageReasonCode.Forced_AuthCapture);
                 }
-                if(!StringUtils.isNullOrEmpty(currency)) {
-                     if(currency.equalsIgnoreCase("CAD")) {
-                        request.set(DataElementId.DE_050, Iso4217_CurrencyCode.CAD);
-                    }
+                if(currency != null) {
+                    request.set(DataElementId.DE_050, currency);
                 }
                 //DE 28
                 request.set(DataElementId.DE_028,DateTime.now().toString("yyMMdd"));
@@ -1339,10 +1329,8 @@ public class VapsConnector extends GatewayConnectorConfig {
                     issuerData.add(CardIssuerEntryTag.NTS_System, builder.getNtsData().toString());
                     request.set(DataElementId.DE_062, issuerData);
                 }
-                if(!StringUtils.isNullOrEmpty(currency)) {
-                    if(currency.equalsIgnoreCase("CAD")) {
-                        request.set(DataElementId.DE_050, Iso4217_CurrencyCode.CAD);
-                    }
+                if(currency!=null) {
+                    request.set(DataElementId.DE_050, currency);
                 }
 //                DE 127
                 if (builder.getPaymentMethod() instanceof Debit || builder.getPaymentMethod() instanceof EBT) {
@@ -3295,10 +3283,7 @@ public class VapsConnector extends GatewayConnectorConfig {
         }
     }
     private EncryptedFieldMatrix getEncryptionField(IPaymentMethod paymentMethod, EncryptionType encryptionType, TransactionType transactionType){
-        String card = null;
-        if(paymentMethod instanceof GiftCard){
-            card = ((GiftCard) paymentMethod).getCardType();
-        }
+
         if(encryptionType.equals(EncryptionType.TDES)){
             if(paymentMethod instanceof ICardData || (paymentMethod instanceof CreditTrackData && transactionType.equals(TransactionType.Refund))){
                 return EncryptedFieldMatrix.Pan;
@@ -3309,9 +3294,7 @@ public class VapsConnector extends GatewayConnectorConfig {
                     return EncryptedFieldMatrix.Track1;
                 else if (trackType == TrackNumber.TrackTwo)
                     return EncryptedFieldMatrix.Track2;
-            }else if(paymentMethod instanceof GiftCard && ((("ValueLink").equals(card)) || (!transactionType.equals(TransactionType.Capture)
-                    && !transactionType.equals(TransactionType.PreAuthCompletion)
-                    && !transactionType.equals(TransactionType.Void) && !transactionType.equals(TransactionType.Reversal)))) {
+            }else if(paymentMethod instanceof GiftCard && !transactionType.equals(TransactionType.Capture) && !transactionType.equals(TransactionType.PreAuthCompletion) && !transactionType.equals(TransactionType.Void) && !transactionType.equals(TransactionType.Reversal)) {
                 TrackNumber trackType=((GiftCard)paymentMethod).getTrackNumber();
                 if (trackType == TrackNumber.TrackOne)
                     return EncryptedFieldMatrix.Track1;

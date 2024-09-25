@@ -1,8 +1,5 @@
 package com.global.api.terminals.upa.Entities.Enums;
 
-/**
- * Enum representing the different types of messages in the UPA system
- */
 public enum UpaMessageId {
     Sale,
     Void,
@@ -20,7 +17,6 @@ public enum UpaMessageId {
     GetBatchReport,
     GetBatchDetails,
     GetOpenTabDetails,
-    FindBatches,
     Ping,
     PreAuth,
     Restart,
@@ -29,23 +25,7 @@ public enum UpaMessageId {
     GetSignature,
     DeleteSAF,
     RegisterPOS,
-    GetAppInfo,
-    ExecuteUDDataFile,
-    InjectUDDataFile,
-    GetConfigContents,
-    MailOrder,
-    ClearDataLake,
-    SetTimeZone,
-    SetDebugLevel,
-    GetParam,
-    GetDebugLevel,
-    GetDebugInfo,
-    BroadcastConfiguration,
-    Scan,
-    ReturnToIdle,
-    LoadUDDataFile,
-    RemoveUDDataFile,
+    DeletePreAuth,
     PrintData,
-    AvailableBatches,
-    DeletePreAuth;
+    GetParam
 }
