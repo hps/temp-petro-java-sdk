@@ -1,0 +1,24 @@
+-classpath
+'/Users/phillip.fox/Documents/GitHub/temp-petro-java-sdk/target/classes:/Users/phillip.fox/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar:/Users/phillip.fox/.m2/repository/joda-time/joda-time/2.9.9/joda-time-2.9.9.jar:/Users/phillip.fox/.m2/repository/org/apache/httpcomponents/httpmime/4.5.14/httpmime-4.5.14.jar:/Users/phillip.fox/.m2/repository/org/projectlombok/lombok/1.18.30/lombok-1.18.30.jar:/Users/phillip.fox/.m2/repository/commons-codec/commons-codec/1.15/commons-codec-1.15.jar:/Users/phillip.fox/.m2/repository/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar:/Users/phillip.fox/.m2/repository/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar'
+-encoding
+'UTF-8'
+-protected
+-sourcepath
+'/Users/phillip.fox/Documents/GitHub/temp-petro-java-sdk/src/main/java:/Users/phillip.fox/Documents/GitHub/temp-petro-java-sdk/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2024. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'/Users/phillip.fox/Documents/GitHub/temp-petro-java-sdk/target/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'Heartland & Global Payments SDK 11.2.23.3 API'
+-linkoffline
+'http://docs.oracle.com/javase/7/docs/api' '/Users/phillip.fox/Documents/GitHub/temp-petro-java-sdk/target/javadoc-bundle-options'
+-use
+-version
+-windowtitle
+'Heartland & Global Payments SDK 11.2.23.3 API'

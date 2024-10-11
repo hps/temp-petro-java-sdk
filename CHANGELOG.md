@@ -1,11 +1,97 @@
 # Changelog
+## Latest Version - V14.0.2.1 (10/11/2024)
+### Bug Fixes
+- [VAPS/NTS] - Fixed issue 10335 - Receiving Gateway Timeouts for reversals
 
-## Latest Version - V11.2.23 (07/16/2024)
+## V14.0.2 (10/01/2024)
+### Bug Fixes
+- [VAPS/NTS] - Fixed issue 10332 - Debit transactions were failing due to Communication exceptions.
+- [GP-API] - Update 3DS Object fields in transaction endpoint ("server_trans_ref" and "ds_trans_ref").
+
+## V14.0.1 (09/20/2024)
+### Bug Fixes
+- [VAPS/NTS] - Fixed Java Memory leak issue by implementing cache thread pool to optimize memory utilization(10331).
+- [Portico] - Added mapping for 3DSecure (Version 2) to Transaction Summary Report.
+
+## V14.0.0 (09/10/2024)
+### Enhacements
+- [UPA] Add new UPA commands
+### Bug Fixes
+- [VAPS] - Resolved 3DES storedValue RC-125 with the updated field matrix value for NonOriginal transaction (10330)
+
+## V13.0.1 (08/29/2024)
+### Enhacements
+- [NTS] Implement masking of entire response after header for echoed request in response.(10317)
+
+## Latest Version - V13.0.0 (08/27/2024)
+### Enhacements
+- [UPA MiC]: Add MiC connector for UPA via GP-API
+- [MEET-IN-THE-CLOUD] [UPA] -  Add new mapping response fields for "/devices" endpoint
+- [NTS] Created new method "withPDLTimeout" in builder to add PDL timeout value (10329).
+- [GPAPI] Add MITC mapping enchacement
+- [UPA]: Fix JSON reader in UPA
+- [UPA]: Fix Auth Amount trimming leading zero.
+- [UPA]: Implement GetParams
+### Bug Fixes:
+- [PAX] Correction to tip/gratuity handling in the request to device
+
+
+
+## V12.0.2 (08/08/2024)
+### Enhancements
+- [PAX Devices] Added 'Sequence Number' to transaction response
+- [DiamondCloud] Add logger for Diamond Cloud provider payment terminal.
+- 10312 - Default timeout has been set to be 30 seconds in sdk and also provided way to override default value for NTS, Vaps 8583, NWS & GNAP.
+
+### Fixes
+- [VAPS] Fixed 10327 - prompts are getting appended with 00 hps wex fleet emv are removed.
+
+## V12.0.1 (07/30/2024)
+### Bug Fixes
+- [VAPS]: VAPS 8583 Currency Code - Issue 10325
+- [Portico] : Added capture condition for Debit & Credit EMV transaction - Issue 10326
+
+## V12.0.0 (07/25/2024)
+### Enhancements
+- [DiamondCloud] Add support for Diamond Cloud provider payment terminals.
+- [GP-API] Add "/payers" endpoint
+
+### Bug Fixes
+- [UPA]: Correction to 'Void' command SDK-level validations
+- [UPA]: Correction to 'AuthCompletion' SDK-level validations
+- [VAPS]: updated condition for Fleet Data prompt for issue 10321 & 10324. If there is no prompt data, then DE 48-8 should not be sent.
+- [Portico]: Fixed the syntax for handling GatewayTimeOut Exception
+
+## V11.2.25 (07/23/2024)
+### Enhancements
+- [NTS]: Added testcases for SDK capability matrix
+- [NWS]: Code Coverage Improvement
+- [Portico]: Added Test cases for code coverage
+- [Bill Pay]: Added test cases for code coverage
+- [GP-API] Code clean up and improvements
+- [GP-ECOM] HPP Addres Capture
+
+### Bug Fixes
+- [GP-API]: Fixed "destination" field as optional for Open banking
+- [UPA]: Fixed improper SAF transaction record response mapping
+- [Portico]:Fixed conditional check for UniqueDeviceId and updated a test
+- [NTS]: Fixed issue 10321 Voyager EMV Prompts issue, updated Vehicle number to 3
+- [NTS]: Fixed issue 10324 Added field for IDNumber in FleetData.
+
+## V11.2.24 (07/18/2024)
+### Enhancements
+UPA:
+- Improved sendSAF command response handling
+
+### Fixes
+Portico:
+- Fixed bug for report request formation
+
+## V11.2.23 (07/16/2024)
 ### Enhancements
 Portico:
 - Add support for sending value for 'UniqueDeviceId' header element
-- Fixed issue 10322 "All the CGP transactions that use Management Builder are failing with ""length should not be more than 50 digits"
-
+- Fixed issue 10322 - All the CGP transactions that use Management Builder are failing with "length should not be more than 50 digits"
 
 GP-API:
 - Added suggested improvements into some requests and mappings
@@ -20,7 +106,7 @@ NTS:
 UPA:
 - Fixed 'GetSAFReport' response handling
 
-## Latest Version - V11.2.22 (07/02/2024)
+## V11.2.22 (07/02/2024)
   ### Fixes
   VAPS:
  - Added Tag DE_28 Date, Reconciliation to the Batch Close transaction Request.

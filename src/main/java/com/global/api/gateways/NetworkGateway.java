@@ -8,7 +8,6 @@ import com.global.api.entities.exceptions.GatewayTimeoutException;
 import com.global.api.gateways.events.*;
 import com.global.api.terminals.abstractions.IDeviceMessage;
 import com.global.api.utils.NtsUtils;
-import com.global.api.utils.StringParser;
 import com.global.api.utils.StringUtils;
 import com.global.api.utils.GnapUtils;
 import lombok.Getter;
@@ -23,6 +22,7 @@ import java.math.BigInteger;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.*;
 
 public class NetworkGateway {
     private SSLSocket client;
@@ -45,6 +45,7 @@ public class NetworkGateway {
     private IGatewayEventHandler gatewayEventHandler;
     @Getter @Setter
     private Target target;
+    private ExecutorService executorService = null;
 
     public String getPrimaryEndpoint() {
         return primaryEndpoint;
@@ -105,6 +106,7 @@ public class NetworkGateway {
 
     // establish connection
     private void connect(String endpoint, Integer port) throws GatewayComsException {
+        executorService = Executors.newCachedThreadPool();
         currentHost = endpoint.equals(primaryEndpoint) ? Host.Primary : Host.Secondary;
 
         // create the connection event
@@ -130,10 +132,16 @@ public class NetworkGateway {
                     try {
                         SSLSocketFactory factory = new SSLSocketFactoryEx();
                         client = (SSLSocket) factory.createSocket();
-                        client.connect(new InetSocketAddress(endpoint, port), 5000);
+                        Callable<Integer> task = () -> {
+                            client.connect(new InetSocketAddress(endpoint, port), 5000);
+                            return 0;
+                        };
+                        Future<Integer> future = executorService.submit(task);
+                        future.get(5000, TimeUnit.MILLISECONDS);
                         client.startHandshake();
-
                         raiseGatewayEvent(new SslHandshakeEvent(connectorName, null));
+                    } catch (TimeoutException | InterruptedException e) {
+                        throw new GatewayTimeoutException();
                     }
                     catch(Exception exc) {
                         raiseGatewayEvent(new SslHandshakeEvent(connectorName, exc));
@@ -248,6 +256,7 @@ public class NetworkGateway {
             throw exc;
         } finally {
             disconnect();
+            shutdownExecutorService();
             // remove the force timeout
             raiseGatewayEvent(new DisconnectEvent(connectorName));
 
@@ -272,7 +281,8 @@ public class NetworkGateway {
         return null;
     }
 
-    private int awaitResponse(InputStream in, byte[] buffer) throws GatewayTimeoutException, IOException {
+    private int awaitResponse(InputStream in, byte[] buffer) throws GatewayTimeoutException {
+        Callable<Integer> task = () -> {
         long t = System.currentTimeMillis();
 
         int position = 0;
@@ -308,6 +318,24 @@ public class NetworkGateway {
         while((System.currentTimeMillis() - t) <= 20000);
 
         throw new GatewayTimeoutException();
+        };
+        Future<Integer> future = executorService.submit(task);
+        try {
+            return future.get( timeout, TimeUnit.MILLISECONDS);
+        }  catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new GatewayTimeoutException();
+        }
+    }
+
+    public void shutdownExecutorService(){
+        executorService.shutdown();
+        try {
+            if(!executorService.awaitTermination(1,TimeUnit.SECONDS)){
+                executorService.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            executorService.shutdownNow();
+        }
     }
 
     private void raiseGatewayEvent(final IGatewayEvent event) {

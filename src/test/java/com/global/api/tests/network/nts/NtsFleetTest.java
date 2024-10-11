@@ -124,7 +124,7 @@ public class NtsFleetTest {
         config.setBinTerminalType(" ");
         config.setInputCapabilityCode(CardDataInputCapability.ContactEmv_MagStripe);
         config.setTerminalId("21");
-        config.setUnitNumber("00066654534");
+        config.setUnitNumber("00001234567");
         config.setSoftwareVersion("21");
         config.setLogicProcessFlag(LogicProcessFlag.Capable);
         config.setTerminalType(TerminalType.VerifoneRuby2Ci);
@@ -1142,7 +1142,6 @@ public class NtsFleetTest {
                 .execute();
 
         assertNotNull(response);
-//        System.out.println(response.getNtsCreditSaleResponse().getHostResponseArea());
         ntsRequestMessageHeader.setNtsMessageCode(NtsMessageCode.ReversalOrVoid);
 
         Transaction voidResponse = response.voidTransaction(new BigDecimal(10))
@@ -2754,4 +2753,91 @@ public class NtsFleetTest {
         assertNotNull(response);
         assertEquals("00", response.getResponseCode());
     }
+
+    // Set the PDL timeout value using separate field withPDLTimeout.
+    @Test
+    public void test_VisaFleet_authorization_10329_PDLTimeout_1() throws ApiException {
+
+        FleetData fleetData = new FleetData();
+        fleetData.setOdometerReading("1234567");
+        fleetData.setDriverId("123456789");
+        fleetData.setServicePrompt("0");
+
+        track = new CreditTrackData();
+        track.setValue("%B4484630000000126^VISA TEST CARD/GOOD^25121019206100000001?");
+        track.setEntryMethod(EntryMethod.Swipe);
+
+
+        Transaction response = track.authorize(new BigDecimal(10))
+                .withCurrency("USD")
+                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
+                .withFleetData(fleetData)
+                .withUniqueDeviceId("0102")
+                .withNtsTag16(tag)
+                .withPDLTimeout(NTSCardTypes.VisaFleet.getTimeOut())
+                .execute();
+        assertNotNull(response);
+        assertEquals("00", response.getResponseCode());
+    }
+    @Test
+    public void test_VisaFleet_authorization_Reversal_10329_PDLTimeout_1() throws ApiException {
+
+        FleetData fleetData = new FleetData();
+        fleetData.setOdometerReading("1234567");
+        fleetData.setDriverId("123456789");
+        fleetData.setServicePrompt("0");
+
+        track = new CreditTrackData();
+        track.setValue("%B4484630000000126^VISA TEST CARD/GOOD^25121019206100000001?");
+        track.setEntryMethod(EntryMethod.Swipe);
+
+
+        Transaction response = track.authorize(new BigDecimal(10))
+                .withCurrency("USD")
+                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
+                .withFleetData(fleetData)
+                .withUniqueDeviceId("0102")
+                .withNtsTag16(tag)
+                .withPDLTimeout(NTSCardTypes.VisaFleet.getTimeOut())
+                .execute();
+        assertNotNull(response);
+        assertEquals("00", response.getResponseCode());
+
+        ntsRequestMessageHeader.setNtsMessageCode(NtsMessageCode.ReversalOrVoid);
+        Transaction voidResponse = response.reverse(new BigDecimal(10))
+                .withCurrency("USD")
+                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
+                .withFleetData(fleetData)
+                .withPDLTimeout(NTSCardTypes.VisaFleet.getTimeOut())
+                .execute();
+
+        // check response
+        assertEquals("00", voidResponse.getResponseCode());
+    }
+
+    @Test
+    public void test_VisaFleet_authorization_10329_PDLTimeout_2() throws ApiException {
+
+        FleetData fleetData = new FleetData();
+        fleetData.setOdometerReading("1234567");
+        fleetData.setDriverId("123456789");
+        fleetData.setServicePrompt("0");
+
+        track = new CreditTrackData();
+        track.setValue("%B4484630000000126^VISA TEST CARD/GOOD^25121019206100000001?");
+        track.setEntryMethod(EntryMethod.Swipe);
+
+
+        Transaction response = track.authorize(new BigDecimal(10))
+                .withCurrency("USD")
+                .withNtsRequestMessageHeader(ntsRequestMessageHeader)
+                .withFleetData(fleetData)
+                .withUniqueDeviceId("0102")
+                .withNtsTag16(tag)
+                .withPDLTimeout(31)
+                .execute();
+        assertNotNull(response);
+        assertEquals("00", response.getResponseCode());
+    }
+
 }
